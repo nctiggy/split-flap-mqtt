@@ -1,5 +1,5 @@
 //checks for new message to show
-void showNewData(char message[number_units]) {
+void showNewData(char message[number_units+1]) {
   if (strcmp(writtenLast, message) != 0) {
     strcpy(writtenLast, message);
     showMessage(message, flap_speed);
@@ -8,7 +8,7 @@ void showNewData(char message[number_units]) {
 }
 
 //pushes message to units
-void showMessage(char message[number_units], int flapSpeed) {
+void showMessage(char message[number_units+1], int flapSpeed) {
   // wait while display is still moving
   while (isDisplayMoving()) {
     Serial.println("moving");
@@ -23,22 +23,25 @@ void showMessage(char message[number_units], int flapSpeed) {
 }
 
 //translates char to letter position
-int translateLettertoInt(char letterchar) {
-  for (int i = 0; i < flapamount; i++) {
+uint8_t translateLettertoInt(char letterchar) {
+  uint8_t match_char;
+  for (uint8_t i = 0; i < flapamount; i++) {
     if (letterchar == letters[i]) {
-      return i;
+      match_char = i;
+      break;
     }
   }
+  return match_char;
 }
 
 //write letter position and speed in rpm to single unit
-void writeToUnit(int address, int letter, int flapSpeed) {
+void writeToUnit(uint8_t address, uint8_t letter, int flapSpeed) {
   int sendArray[2] = {letter, flapSpeed}; //Array with values to send to unit
 
   Wire.beginTransmission(address);
 
   //Write values to send to slave in buffer
-  for (int i = 0; i < sizeof sendArray / sizeof sendArray[0]; i++) {
+  for (uint8_t i = 0; i < sizeof sendArray / sizeof sendArray[0]; i++) {
     Wire.write(sendArray[i]);
   }
   Wire.endTransmission(); //send values to unit
@@ -62,9 +65,9 @@ bool isDisplayMoving() {
 }
 
 //checks if single unit is moving
-int checkIfMoving(int address) {
+int checkIfMoving(uint8_t address) {
   int active;
-  Wire.requestFrom(address, answersize, true);
+  Wire.requestFrom(address, answersize, (uint8_t)1);
   active = Wire.read();
   if (active == -1) {
     Wire.beginTransmission(address);

@@ -34,7 +34,7 @@ void reconnect() {
 }
 
 void callback(String topic, byte* message, unsigned int length) {
-  char flap_msg[number_units];
+  char flap_msg[number_units+1];
   int spaces = 0;
   
   Serial.print("Message arrived on topic: ");
