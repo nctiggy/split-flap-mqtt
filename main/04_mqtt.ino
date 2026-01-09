@@ -2,34 +2,42 @@ void mqttSetup() {
  client.setServer(mqtt_server, mqtt_port);
  client.setCallback(callback);
 }
-void reconnect() {
-  // Loop until we're reconnected
-  while (!client.connected()) {
-    Serial.print("Attempting MQTT connection...");
-    // Attempt to connect
-    /*
-     YOU MIGHT NEED TO CHANGE THIS LINE, IF YOU'RE HAVING PROBLEMS WITH MQTT MULTIPLE CONNECTIONS
-     To change the ESP device ID, you will have to give a new name to the ESP8266.
-     Here's how it looks:
-       if (client.connect("ESP8266Client")) {
-     You can do it like this:
-       if (client.connect("ESP1_Office")) {
-     Then, for the other ESP:
-       if (client.connect("ESP2_Garage")) {
-      That should solve your MQTT multiple connections problem
-    */
-    if (client.connect(mdns_hostname)) {
-      Serial.println("connected");  
-      // Subscribe or resubscribe to a topic
-      // You can subscribe to more topics (to control more LEDs in this example)
-      client.subscribe(mqtt_listen);
-    } else {
-      Serial.print("failed, rc=");
-      Serial.print(client.state());
-      Serial.println(" try again in 5 seconds");
-      // Wait 5 seconds before retrying
-      delay(5000);
-    }
+// Non-blocking reconnect - returns true if connected, false if still trying
+bool reconnect() {
+  static unsigned long lastReconnectAttempt = 0;
+
+  if (client.connected()) {
+    return true;
+  }
+
+  unsigned long now = millis();
+  // Only attempt reconnect every 5 seconds
+  if (now - lastReconnectAttempt < 5000) {
+    return false;
+  }
+  lastReconnectAttempt = now;
+
+  Serial.print("Attempting MQTT connection...");
+  /*
+   YOU MIGHT NEED TO CHANGE THIS LINE, IF YOU'RE HAVING PROBLEMS WITH MQTT MULTIPLE CONNECTIONS
+   To change the ESP device ID, you will have to give a new name to the ESP8266.
+   Here's how it looks:
+     if (client.connect("ESP8266Client")) {
+   You can do it like this:
+     if (client.connect("ESP1_Office")) {
+   Then, for the other ESP:
+     if (client.connect("ESP2_Garage")) {
+    That should solve your MQTT multiple connections problem
+  */
+  if (client.connect(mdns_hostname)) {
+    Serial.println("connected");
+    client.subscribe(mqtt_listen);
+    return true;
+  } else {
+    Serial.print("failed, rc=");
+    Serial.print(client.state());
+    Serial.println(" try again in 5 seconds");
+    return false;
   }
 }
 
@@ -65,13 +73,11 @@ void mqttLoopOps() {
   if (!client.connected()) {
     reconnect();
   }
-  if (!client.loop()) {
-    client.connect(mdns_hostname);
-  }
+  client.loop();
 }
 
 void build_registration() {
-  const size_t CAPACITY = JSON_OBJECT_SIZE(4);
+  const size_t CAPACITY = JSON_OBJECT_SIZE(5);  // 5 fields: name, ip_address, state, uptime, last_written
   StaticJsonDocument<CAPACITY> doc;
   doc["name"] = mdns_hostname;
   doc["ip_address"] = ip_char;

@@ -11,7 +11,7 @@ const char* mqtt_debug = "/debug";
 const int check_in_freq = 60000;
 IPAddress ip_address;
 char ip_char[16];
-unsigned long lastMillis = 0;
+unsigned long lastMillis = millis();  // Initialize to current time so first check-in waits 60s
 String reg;
 int displayState[number_units];
 const uint8_t answersize = 1; //Size of units request answer
