@@ -19,5 +19,5 @@ const int flapamount = 45; //Amount of Flaps in each unit
 const int minspeed = 1; //min Speed
 const int maxspeed = 12; //max Speed
 const char letters[] = {' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '$', '&', '#', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', '.', '-', '?', '!'};
-char writtenLast[number_units+1];
+char writtenLast[number_units+1] = "";
 const int flap_speed = 10;

@@ -24,7 +24,7 @@ void showMessage(char message[number_units+1], int flapSpeed) {
 
 //translates char to letter position
 uint8_t translateLettertoInt(char letterchar) {
-  uint8_t match_char;
+  uint8_t match_char = 0;  // Default to space (position 0) if no match
   for (uint8_t i = 0; i < flapamount; i++) {
     if (letterchar == letters[i]) {
       match_char = i;
