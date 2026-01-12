@@ -1,4 +1,5 @@
 #include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
 #include <Ticker.h>
 #include <ArduinoOTA.h>
 #include <ArduinoJson.h>
@@ -8,7 +9,7 @@
 
 //#define SERIAL // Only define for debug, will break the I2C interface if enabled
 
-#define FW_VERSION "1.1.0"
+const char* FW_VERSION = "1.2.0";
 
 const int number_units = 10;
 
@@ -35,6 +36,7 @@ void setup() {
   build_registration();
   otaSetup();
   mqttSetup();
+  webConfigSetup();
 }
 
 void loop() {
@@ -44,6 +46,7 @@ void loop() {
   checkWifiConnection();
   mqttLoopOps();
   ArduinoOTA.handle();
+  webConfigLoop();
   processMessageQueue();  // Process queued messages when display is idle
   publishHealth();        // Publish health metrics periodically
   delay(10);

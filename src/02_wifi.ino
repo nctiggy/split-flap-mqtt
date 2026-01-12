@@ -97,10 +97,18 @@ void connectToWifi() {
     LittleFS.format();
     LittleFS.begin();
   }
-  loadConfig();
+
+  bool configExists = loadConfig();
 
   // Create WiFiManager instance
   WiFiManager wifiManager;
+
+  // If no config file exists, clear any stored WiFi credentials
+  // This ensures fresh devices always start the config portal
+  if (!configExists || strlen(cfg_mqtt_server) == 0) {
+    Serial.println("No valid config found, clearing stored WiFi...");
+    wifiManager.resetSettings();
+  }
 
   // Set config save callback
   wifiManager.setSaveConfigCallback(saveConfigCallback);

@@ -3,6 +3,9 @@
 
 #include <Arduino.h>
 
+// Version
+extern const char* FW_VERSION;
+
 // Constants
 extern const int number_units;
 extern const int flapamount;
@@ -55,9 +58,14 @@ void buildMqttTopics();
 void connectToWifi();
 void checkWifiConnection();
 void resetWifiConfig();
+bool saveConfig();
 
 // Function declarations - OTA
 void otaSetup();
+
+// Function declarations - Web Config
+void webConfigSetup();
+void webConfigLoop();
 
 // Function declarations - MQTT
 void mqttSetup();
