@@ -1,0 +1,16 @@
+# PlatformIO build artifacts
+.pio/
+
+# IDE settings
+.vscode/
+.idea/
+
+# Mosquitto runtime data
+mosquitto/data/
+mosquitto/log/
+
+# macOS
+.DS_Store
+
+# Secrets (if any)
+secrets.h

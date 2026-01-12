@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: flaps-mqtt
+    ports:
+      - "1883:1883"     # MQTT standard port
+      - "9001:9001"     # WebSockets (optional, for browser clients)
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    restart: unless-stopped
+    command: >
+      sh -c "mkdir -p /mosquitto/config &&
+             echo -e 'listener 1883\nallow_anonymous true\nlistener 9001\nprotocol websockets' > /mosquitto/config/mosquitto.conf &&
+             mosquitto -c /mosquitto/config/mosquitto.conf"
